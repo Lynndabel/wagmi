@@ -1,23 +1,21 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { useAccount, useConnectors, useConnect, useDisconnect, useSwitchChain } from "wagmi"
-import { mainnet, sepolia, lisk, liskSepolia, base, polygon } from 'wagmi/chains'
+import { supportedChains } from "./config/wagmi.config";
 
 const WalletConnect = () => {
   const accounts = useAccount()
-  const connectors = useConnectors()
+  //const connectors = useConnectors()
+  const { connectors } = useConnect();
   const { connect } = useConnect()
   const { disconnect } = useDisconnect()
-  const { switchChain } = useSwitchChain() 
+  const { switchChain } = useSwitchChain()
   const [connectClick, setConnectClick] = useState(false)
   const [connector, setConnector] = useState(null)
 
-  const supportedChains = [mainnet, sepolia, lisk, liskSepolia, base, polygon]
-  
   useEffect(() => {
-    if(!connectors) return
-
-    if(accounts.address === undefined) return
+    if (!connectors) return
+    if (accounts.address === undefined) return
     setConnector(accounts.connector)
     setConnectClick(false)
   }, [accounts.connector])
@@ -27,11 +25,11 @@ const WalletConnect = () => {
   }
 
   const handleConnector = (_connector) => {
-    connect({connector:_connector})
+    connect({ connector: _connector })
   }
 
   const handleDisconnect = () => {
-    if(connector){
+    if (connector) {
       disconnect()
       setConnector(null)
       setConnectClick(false)
@@ -39,16 +37,16 @@ const WalletConnect = () => {
   }
 
   const handleSwitchChain = async (id) => {
-    console.log("chainID",id)
-    await switchChain({chainId:Number(id)})
+    console.log("chainID", id)
+    await switchChain({ chainId: Number(id) })
   }
-  
+
   return (
     <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden">
       {!connector ? (
         <div className="p-6">
           {!connectClick ? (
-            <button 
+            <button
               onClick={handleConnectWallet}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
             >
@@ -59,11 +57,10 @@ const WalletConnect = () => {
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
                 Select Wallet
               </h2>
-              
               <div className="space-y-2">
                 {connectors.map((connector) => (
-                  <button 
-                    key={connector.id} 
+                  <button
+                    key={connector.id}
                     onClick={() => handleConnector(connector)}
                     className="flex items-center justify-between w-full p-3 border border-gray-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200"
                   >
@@ -72,9 +69,8 @@ const WalletConnect = () => {
                   </button>
                 ))}
               </div>
-              
               <div className="pt-4">
-                <button 
+                <button
                   onClick={() => setConnectClick(false)}
                   className="w-full py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                 >
@@ -92,7 +88,6 @@ const WalletConnect = () => {
               {accounts.isConnected && "Connected"}
             </div>
           </div>
-          
           <div className="bg-indigo-50 p-4 rounded-lg">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-indigo-700 font-medium">Address</span>
@@ -104,15 +99,14 @@ const WalletConnect = () => {
               {accounts.address}
             </div>
           </div>
-          
           <div className="grid grid-cols-1 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Network
               </label>
               <div className="relative">
-                <select 
-                  value={accounts.chain?.id} 
+                <select
+                  value={accounts.chain?.id}
                   onChange={(e) => handleSwitchChain(e.target.value)}
                   className="block w-full p-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md appearance-none"
                 >
@@ -124,8 +118,7 @@ const WalletConnect = () => {
                 </select>
               </div>
             </div>
-            
-            <button 
+            <button
               onClick={handleDisconnect}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
             >
